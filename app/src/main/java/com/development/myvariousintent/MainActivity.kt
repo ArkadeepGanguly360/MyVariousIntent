@@ -2,7 +2,6 @@ package com.development.myvariousintent
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -20,6 +19,8 @@ class MainActivity : AppCompatActivity() {
     private val latitude = "22.4815"
     private val longitude = "88.3864"
     private var webUrl = "https://www.youtube.com/"
+    private val packagename = "com.geoff.catchup"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +31,8 @@ class MainActivity : AppCompatActivity() {
         binding.btWebsite.onClick()
         binding.btMsg.onClick()
         binding.btWhatsapp.onClick()
+        binding.btShare.onClick()
+        binding.btGooglePlaystore.onClick()
     }
 
     private fun View.onClick() {
@@ -73,10 +76,35 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 binding.btWhatsapp.id -> {
-                     val url = "https://api.whatsapp.com/send?phone=$phNo"
+                    val url = "https://api.whatsapp.com/send?phone=$phNo"
                     val i = Intent(Intent.ACTION_VIEW)
                     i.data = Uri.parse(url)
                     startActivity(i)
+                }
+                binding.btShare.id -> {
+                    try {
+                        val shareIntent = Intent(Intent.ACTION_SEND)
+                        shareIntent.type = "text/plain"
+                        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "My application name")
+                        var shareMessage = "\nLet me recommend you this application\n\n"
+                        shareMessage =
+                            """
+                            ${shareMessage}https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}
+                            
+                            
+                            """.trimIndent()
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage)
+                        startActivity(Intent.createChooser(shareIntent, "choose one"))
+                    } catch (e: Exception) {
+                        //e.toString();
+                    }
+                }
+                binding.btGooglePlaystore.id -> {
+                    try {
+                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$packagename")))
+                    } catch (e: ActivityNotFoundException) {
+                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$packagename")))
+                    }
                 }
             }
         }
